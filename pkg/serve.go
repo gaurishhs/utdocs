@@ -11,31 +11,8 @@ import (
 	"utdocs/manifest"
 
 	"github.com/fatih/color"
-	"github.com/rjeczalik/notify"
+	"github.com/fsnotify/fsnotify"
 )
-
-func watchRecursive(path string, channel chan notify.EventInfo) error {
-	infoChannel := make(chan notify.EventInfo)
-
-	// Watch main directory
-	err := notify.Watch(filepath.Join(path, "..."), infoChannel, notify.All)
-	if err != nil {
-		return err
-	}
-
-	// Preprocess events
-	go func() {
-		for {
-			info := <-infoChannel
-			stat, err := os.Stat(info.Path())
-			if err != nil || !stat.IsDir() {
-				channel <- info
-			}
-		}
-	}()
-
-	return nil
-}
 
 func runServer(port int) error {
 	// Parse manifest
@@ -45,32 +22,48 @@ func runServer(port int) error {
 	}
 
 	// Start watcher
-	channel := make(chan notify.EventInfo)
-	err = watchRecursive(siteManifest.InputPath, channel)
+	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return err
 	}
+	defer watcher.Close()
 
 	// Start watch-event handler
 	go func() {
 		for {
-			<-channel
-
-			// File system has changed, generate new version
-			log.Print("Change detected, Regenerating documentation\n")
-			// Delete Previous Search Index
-			if siteManifest.DefaultSearch {
-				erro := os.Remove(filepath.Join(siteManifest.OutputPath, "search", "index.json"))
-				if erro != nil {
-					log.Printf("Error deleting search index: %s\n", err)
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
 				}
-			}
-			err := runGenerator()
-			if err != nil {
-				diagnostics.PrintError(err, "failed to regenerate")
+				if event.Has(fsnotify.Write) {
+					// File system has changed, generate new version
+					color.Yellow("File system has changed, generating new version...")
+					// Delete Previous Search Index
+					if siteManifest.DefaultSearch {
+						erro := os.Remove(filepath.Join(siteManifest.OutputPath, "search", "index.json"))
+						if erro != nil {
+							log.Printf("Error deleting search index: %s\n", err)
+						}
+					}
+					err := runGenerator()
+					if err != nil {
+						diagnostics.PrintError(err, "failed to regenerate")
+					}
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Printf("Error: %s\n", err)
 			}
 		}
 	}()
+
+	err = watcher.Add(siteManifest.InputPath)
+	if err != nil {
+		return err
+	}
 
 	// Generate initial version
 	err = runGenerator()
@@ -80,7 +73,7 @@ func runServer(port int) error {
 
 	// Start server
 	server := http.FileServer(http.Dir(siteManifest.OutputPath))
-	color.Yellow("Serving documentation on http://localhost:%d\n", port)
+	color.Green("Serving documentation on http://localhost:%d\n", port)
 	err = http.ListenAndServe(":"+strconv.Itoa(port), server)
 	if err != nil {
 		return err
