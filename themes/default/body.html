@@ -29,7 +29,7 @@
     <div class="search-container" id="search-container">
         <div id="#search-modal" class="search-modal">
             <button id="search-modal-close" type="button" class="search-modal-close">
-                <svg fill="#fff" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>            
+                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 4.7070312 3.2929688 L 3.2929688 4.7070312 L 10.585938 12 L 3.2929688 19.292969 L 4.7070312 20.707031 L 12 13.414062 L 19.292969 20.707031 L 20.707031 19.292969 L 13.414062 12 L 20.707031 4.7070312 L 19.292969 3.2929688 L 12 10.585938 L 4.7070312 3.2929688 z"/></svg>            
             </button>
             <header class="search-bar-header">
                 <form class="search-form">
@@ -58,7 +58,7 @@
     <section class="flex-fill">
         <div class="main-content" id="main-content">{{ .Page.Body }}</div>
     </section>
-    <section class="toc">
+    <section id="toc" class="toc">
         <div class="toc-item header">Contents</div>
         {{ range .Page.Toc }}
         <a href="#{{ .Id }}" class="toc-item">{{ .Name }}</a>

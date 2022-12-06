@@ -19,7 +19,9 @@ func ParseSiteManifest(path string) (SiteManifest, error) {
 	if siteSection != nil {
 		result.Name = siteSection.Key("Name").String()
 		result.ThemeId = siteSection.Key("Theme").MustString("default")
+		result.HeadTags = append(result.HeadTags, siteSection.Key("HeadTags").Strings(",")...)
 		result.DefaultSearch = siteSection.Key("DefaultSearch").MustBool(true)
+		result.CustomFont = siteSection.Key("CustomFont").String()
 	}
 
 	filesSection := manifest.Section("Files")

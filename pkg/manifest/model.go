@@ -6,6 +6,8 @@ type SiteManifest struct {
 	InputPath     string
 	OutputPath    string
 	DefaultSearch bool
+	HeadTags      []string
+	CustomFont    string
 }
 
 type HighlightingConfig struct {

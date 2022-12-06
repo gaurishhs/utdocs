@@ -7,11 +7,11 @@ import (
 	"utdocs/manifest"
 	"utdocs/utils"
 
-	chroma "github.com/alecthomas/chroma/formatters/html"
+	hhtml "github.com/alecthomas/chroma/v2/formatters/html"
 	headingid "github.com/jkboxomine/goldmark-headingid"
 	"github.com/yuin/goldmark"
 	emoji "github.com/yuin/goldmark-emoji"
-	highlighting "github.com/yuin/goldmark-highlighting"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
@@ -68,7 +68,7 @@ func renderMarkdownPage(mdFile string, theme manifest.ThemeManifest, siteManifes
 			highlighting.NewHighlighting(
 				highlighting.WithStyle(theme.Highlighting.Style),
 				highlighting.WithFormatOptions(
-					chroma.WithLineNumbers(theme.Highlighting.LineNumbers),
+					hhtml.WithLineNumbers(theme.Highlighting.LineNumbers),
 				),
 			),
 			emoji.Emoji,
@@ -99,25 +99,16 @@ func renderMarkdownPage(mdFile string, theme manifest.ThemeManifest, siteManifes
 
 	// Build the search index
 
-	if siteManifest.DefaultSearch {
-		ast.Walk(astRoot, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
-			if entering && node.Kind() == ast.KindHeading {
-				heading := node.(*ast.Heading)
-				if filepath.ToSlash(findDirForPage(result, siteManifest)) == "." {
-					result.SearchContent = append(result.SearchContent, SearchIndexEntry{
-						Title: string(heading.Text(source)),
-						Url:   "/",
-					})
-				} else {
-					result.SearchContent = append(result.SearchContent, SearchIndexEntry{
-						Title: string(heading.Text(source)),
-						Url:   "/" + findDirForPage(result, siteManifest) + "/",
-					})
-				}
-			}
-			return ast.WalkContinue, nil
-		})
-	}
+	// if siteManifest.DefaultSearch {
+	// 	ast.Walk(astRoot, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
+	// 		if entering && node.Kind() == ast.KindHeading {
+	// 			heading := node.(*ast.Heading)
+	// 			// Get underlying text nodes
+	// 			goquerySelection :=
+	// 		}
+	// 		return ast.WalkContinue, nil
+	// 	})
+	// }
 
 	return result, err
 }

@@ -4,15 +4,37 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"utdocs/core"
 	"utdocs/diagnostics"
 	"utdocs/manifest"
+	"utdocs/utils"
 
 	"github.com/fatih/color"
 	"github.com/fsnotify/fsnotify"
 )
+
+func DefaultNotFound(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	w.Write([]byte("404 - Not Found"))
+}
+
+func FileServerWithCustom404(fs http.FileSystem, port int) http.Handler {
+	color.Green("Serving on http://localhost:%d", port)
+	fsh := http.FileServer(fs)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, err := fs.Open(path.Clean(r.URL.Path))
+		if err == nil {
+			fsh.ServeHTTP(w, r)
+			return
+		} else {
+			DefaultNotFound(w, r)
+			return
+		}
+	})
+}
 
 func runServer(port int) error {
 	// Parse manifest
@@ -37,6 +59,9 @@ func runServer(port int) error {
 					return
 				}
 				if event.Has(fsnotify.Write) {
+					if !utils.ShouldRebuild(event.Name, event.Op) {
+						continue
+					}
 					// File system has changed, generate new version
 					color.Yellow("File system has changed, generating new version...")
 					// Delete Previous Search Index
@@ -71,10 +96,7 @@ func runServer(port int) error {
 		return err
 	}
 
-	// Start server
-	server := http.FileServer(http.Dir(siteManifest.OutputPath))
-	color.Green("Serving documentation on http://localhost:%d\n", port)
-	err = http.ListenAndServe(":"+strconv.Itoa(port), server)
+	err = http.ListenAndServe(":"+strconv.Itoa(port), FileServerWithCustom404(http.Dir(siteManifest.OutputPath), port))
 	if err != nil {
 		return err
 	}

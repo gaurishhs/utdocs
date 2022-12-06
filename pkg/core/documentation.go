@@ -14,6 +14,7 @@ import (
 	"utdocs/manifest"
 	"utdocs/utils"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
 )
 
@@ -45,8 +46,9 @@ type pageInfo struct {
 }
 
 type SearchIndexEntry struct {
-	Title string
-	Url   string
+	Title   string
+	Url     string
+	Content string
 }
 
 type pageContext struct {
@@ -127,6 +129,26 @@ func generateThemedHtmlForPage(pageContext *pageContext, siteManifest manifest.S
 		diagnostics.PrintError(err, "failed to run HTML postproc for "+mdFile)
 		return
 	}
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlBuf.String()))
+	if err != nil {
+		diagnostics.PrintError(err, "failed to parse HTML for "+mdFile)
+		return
+	}
+
+	doc.Find(".main-content").Children().Each(func(i int, s *goquery.Selection) {
+		nodeName := goquery.NodeName(s)
+		if nodeName == "h1" || nodeName == "h2" || nodeName == "h3" || nodeName == "h4" || nodeName == "h5" || nodeName == "h6" {
+			text := s.NextFilteredUntil("p,li,a", "h1,h2,h3,h4,h5,h6").Text()
+			if text != "" {
+				s.Remove()
+			}
+			AddToSearchIndex(siteManifest, SearchIndexEntry{
+				Title:   s.Text(),
+				Url:     pageContext.Url + "#" + s.AttrOr("id", ""),
+				Content: text,
+			})
+		}
+	})
 
 	err = writer.Close()
 	if err != nil {
@@ -217,7 +239,7 @@ func updateIsActive(pageCtx *pageContext, nodes []*navNode) {
 	}
 }
 
-func AddToSearchIndex(siteManifest manifest.SiteManifest, pageCtx pageContext) {
+func AddToSearchIndex(siteManifest manifest.SiteManifest, ndata SearchIndexEntry) {
 	// If search index.json does not exist, create it
 	indexPath := filepath.Join(siteManifest.OutputPath, "search", "index.json")
 	if _, err := os.Stat(indexPath); os.IsNotExist(err) {
@@ -238,12 +260,12 @@ func AddToSearchIndex(siteManifest manifest.SiteManifest, pageCtx pageContext) {
 			return
 		}
 		defer file.Close()
-		data, err := json.Marshal(pageCtx.Page.SearchContent)
+		data, err := json.Marshal(ndata)
 		if err != nil {
 			diagnostics.PrintError(err, "failed to marshal search content")
 			return
 		}
-		_, err = file.Write(data)
+		_, err = file.Write([]byte(`[ ` + string(data) + ` ]`))
 		if err != nil {
 			diagnostics.PrintError(err, "failed to write search content")
 			return
@@ -269,7 +291,7 @@ func AddToSearchIndex(siteManifest manifest.SiteManifest, pageCtx pageContext) {
 		}
 
 		// Append the new data
-		existingData = append(existingData, pageCtx.Page.SearchContent...)
+		existingData = append(existingData, ndata)
 		jsonData, err := json.Marshal(existingData)
 		if err != nil {
 			diagnostics.PrintError(err, "failed to marshal search content")
@@ -300,9 +322,6 @@ func GenerateDocumentation(siteManifest manifest.SiteManifest, themeManifest man
 		pageCtx.Nav = navTreeRoot.Children
 		updateIsActive(&pageCtx, pageCtx.Nav)
 		generateThemedHtmlForPage(&pageCtx, siteManifest, themeTemplate)
-		if siteManifest.DefaultSearch {
-			AddToSearchIndex(siteManifest, pageCtx)
-		}
 	}
 
 	err = copyMediaFiles(siteManifest, themeDir)
@@ -310,7 +329,7 @@ func GenerateDocumentation(siteManifest manifest.SiteManifest, themeManifest man
 		return err
 	}
 
-	color.Green("Documentation generated in %dus", stopwatch.Microseconds())
+	color.Green("Documentation generated in %dms", stopwatch.Milliseconds())
 
 	return nil
 }

@@ -114,4 +114,4 @@ class Alert extends HTMLElement {
 }
 
 
-customElements.define('u-alert', Alert);
+customElements.define('ut-alert', Alert);

@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <style>html{visibility: hidden;opacity:0;}</style>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ .Page.Title }}</title>
+    <title>{{ .Page.Title }} - {{ .Site.Name }}</title>
     <link rel="shortcut icon" href="img/favicon.ico">
 
     <!-- Stylesheets and scripts -->
@@ -14,18 +15,28 @@
         <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer></script>
         <script src="js/search.js" defer></script>
     {{ end }}
+    {{ if .Site.HeadTags }}
+        {{ range .Site.HeadTags }}
+            {{ . }}
+        {{ end }}
+    {{ end }}
+    {{ if .Site.CustomFont }}
+        <style>
+            :root {
+                --custom-font: '{{ .Site.CustomFont }}' !important;
+            }
+        </style>
+    {{ end }}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="css/theme.css">
     <script src="js/components/alert.js" defer></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@600&display=swap" rel="stylesheet">
+    <script src="js/theme.js" charset="utf-8" defer></script>
 </head>
 
 <body>
     {{ template "body.html" . }}
 
-    <script src="js/theme.js" charset="utf-8"></script>
 </body>
 
 <!--
