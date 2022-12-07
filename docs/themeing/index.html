@@ -1,6 +1,11 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8"/>
-    <style>html{visibility: hidden;opacity:0;}</style>
+    <style>
+        html {
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -9,31 +14,32 @@
 
     <!-- Stylesheets and scripts -->
     
-        <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer=""></script>
-        <script src="../js/search.js" defer=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer=""></script>
+    <script src="../js/search.js" defer=""></script>
     
     
-        
-            <link rel="preconnect" href="https://fonts.googleapis.com"/>
-        
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
-        
-            <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&amp;display=swap" rel="stylesheet"/>
-        
-            <meta name="description" content="UTDocs is a powerful documentation generator in Golang
-        
-            Offers features like Full Text Search
-        
-            Rich Markdown and Components."/>
-        
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&amp;display=swap" rel="stylesheet"/>
+    
+    <meta name="description" content="UTDocs is a powerful documentation generator in Golang
+    
+    Offers features like Full Text Search
+    
+    Rich Markdown and Components."/>
     
     
-        <style>
-            :root {
-                --custom-font: 'IBM Plex Sans' !important;
-            }
-        </style>
     
+    <style>
+        :root {
+            --custom-font: 'IBM Plex Sans' !important;
+        }
+    </style>
+    
+    <script src="https://unpkg.com/quicklink@2.3.0/dist/quicklink.umd.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"/>
     <link rel="stylesheet" href="../css/theme.css"/>
     <script src="../js/components/alert.js" defer=""></script>
@@ -67,16 +73,16 @@
             </header>
 
              
-    <a class="nav-item " data-href=".">Introduction</a>
+    <a class="nav-item " href="../.">Introduction</a>
 
   
-    <a class="nav-item " data-href="components">Components</a>
+    <a class="nav-item " href="../components">Components</a>
 
   
-    <a class="nav-item " data-href="config">Configuration</a>
+    <a class="nav-item " href="../config">Configuration</a>
 
   
-    <a class="nav-item " data-href="themeing">Themeing</a>
+    <a class="nav-item " href="../themeing">Themeing</a>
 
  
         </div>
@@ -154,7 +160,12 @@
         
     </section>
 </main>
-
+    <script> window.addEventListener('load', () => {
+            quicklink.listen({
+                prerender: true,
+                el: document.querySelector('#nav'),
+            });
+        });</script>
 
 
 
@@ -162,10 +173,6 @@
 </body><!--
     Generator: utdocs
     Version:   1.0.0
-<<<<<<< HEAD
-    Built on:  2022-12-07 13:33:20.545
-=======
-    Built on:  2022-12-07 10:40:37.907
->>>>>>> 5518d4abb0df88969b72c6a1c3454556c36400b4
+    Built on:  2022-12-07 15:14:00.543
     Source:    docs_src/themeing.md
 --></html>
