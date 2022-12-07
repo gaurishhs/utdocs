@@ -22,12 +22,9 @@ func ParseSiteManifest(path string) (SiteManifest, error) {
 		result.HeadTags = append(result.HeadTags, siteSection.Key("HeadTags").Strings(",")...)
 		result.DefaultSearch = siteSection.Key("DefaultSearch").MustBool(true)
 		result.CustomFont = siteSection.Key("CustomFont").String()
-	}
-
-	filesSection := manifest.Section("Files")
-	if filesSection != nil {
 		result.InputPath = siteSection.Key("Input").MustString("docs")
 		result.OutputPath = siteSection.Key("Output").MustString("docs_gen")
+		result.Logo = siteSection.Key("Logo").MustString("img/book.svg")
 	}
 
 	if !result.IsValid() {

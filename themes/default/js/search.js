@@ -10,7 +10,7 @@
         minMatchCharLength: 3,
         includeMatches: true,
         shouldSort: true,
-        threshold: 0.4,
+        threshold: 0.1,
         location: 0,
         distance: 100,
     });

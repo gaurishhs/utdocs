@@ -8,6 +8,7 @@ type SiteManifest struct {
 	DefaultSearch bool
 	HeadTags      []string
 	CustomFont    string
+	Logo          string
 }
 
 type HighlightingConfig struct {

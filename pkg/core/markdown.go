@@ -97,18 +97,5 @@ func renderMarkdownPage(mdFile string, theme manifest.ThemeManifest, siteManifes
 		result.Body = buf.String()
 	}
 
-	// Build the search index
-
-	// if siteManifest.DefaultSearch {
-	// 	ast.Walk(astRoot, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
-	// 		if entering && node.Kind() == ast.KindHeading {
-	// 			heading := node.(*ast.Heading)
-	// 			// Get underlying text nodes
-	// 			goquerySelection :=
-	// 		}
-	// 		return ast.WalkContinue, nil
-	// 	})
-	// }
-
 	return result, err
 }

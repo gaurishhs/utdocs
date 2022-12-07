@@ -51,8 +51,11 @@
     for (var i = 0; i < navLinks.length; i++) {
         navLinks[i].onclick = function (e) {
             var linkHref = this.getAttribute('data-href');
+            if (!linkHref.startsWith('/')) {
+                linkHref = '/' + linkHref;
+            }
             if (linkHref) {
-                window.history.pushState(null, null, window.location.origin + "/" + linkHref);
+                window.history.pushState(null, null, window.location.origin + linkHref);
                 fetch(linkHref)
                     .then(function (response) {
                         return response.text();
@@ -72,6 +75,8 @@
                         e.target.classList.add('active');
 
                         document.getElementById('toc').innerHTML = doc.getElementById('toc').innerHTML;
+                    }).catch((e) => {
+                        console.log(e);
                     })
             }
         }

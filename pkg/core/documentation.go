@@ -37,12 +37,11 @@ type generatorInfo struct {
 }
 
 type pageInfo struct {
-	FilePath      string
-	FileName      string
-	Title         string
-	Body          string
-	Toc           []tocEntry
-	SearchContent []SearchIndexEntry
+	FilePath string
+	FileName string
+	Title    string
+	Body     string
+	Toc      []tocEntry
 }
 
 type SearchIndexEntry struct {
@@ -135,20 +134,33 @@ func generateThemedHtmlForPage(pageContext *pageContext, siteManifest manifest.S
 		return
 	}
 
-	doc.Find(".main-content").Children().Each(func(i int, s *goquery.Selection) {
-		nodeName := goquery.NodeName(s)
-		if nodeName == "h1" || nodeName == "h2" || nodeName == "h3" || nodeName == "h4" || nodeName == "h5" || nodeName == "h6" {
-			text := s.NextFilteredUntil("p,li,a", "h1,h2,h3,h4,h5,h6").Text()
-			if text != "" {
-				s.Remove()
+	if siteManifest.DefaultSearch {
+		doc.Find(".main-content").Children().Each(func(i int, s *goquery.Selection) {
+			nodeName := goquery.NodeName(s)
+			url := pageContext.Url
+			if url == "." {
+				url = "/"
 			}
-			AddToSearchIndex(siteManifest, SearchIndexEntry{
-				Title:   s.Text(),
-				Url:     pageContext.Url + "#" + s.AttrOr("id", ""),
-				Content: text,
-			})
-		}
-	})
+			if nodeName == "h1" {
+				text := strings.ReplaceAll(s.NextFilteredUntil("p,li,a", "h1,h2,h3,h4,h5,h6").Text(), "\n", " ")
+				if text != "" {
+					s.Remove()
+				}
+				AddToSearchIndex(siteManifest, SearchIndexEntry{
+					Title:   s.Text(),
+					Url:     url + "#" + s.AttrOr("id", ""),
+					Content: text,
+				})
+			} else if nodeName == "h2" || nodeName == "h3" || nodeName == "h4" || nodeName == "h5" || nodeName == "h6" {
+				text := strings.ReplaceAll(s.NextFilteredUntil("p,li,a", "h1,h2,h3,h4,h5,h6").Text(), "\n", " ")
+				AddToSearchIndex(siteManifest, SearchIndexEntry{
+					Title:   s.Text(),
+					Url:     url + "#" + s.AttrOr("id", ""),
+					Content: text,
+				})
+			}
+		})
+	}
 
 	err = writer.Close()
 	if err != nil {
@@ -178,7 +190,7 @@ func prepareDocumentationTree(dirPath string, rootDirPrefix string, parentNode *
 	for _, dirent := range dir {
 		childPath := filepath.Join(dirPath, dirent.Name())
 		newNode := &navNode{
-			Name: dirent.Name(),
+			Name: strings.ReplaceAll(dirent.Name(), "-", " "),
 			Url:  "",
 		}
 
@@ -230,13 +242,6 @@ func copyMediaFiles(siteManifest manifest.SiteManifest, themeDir string) error {
 	}
 
 	return nil
-}
-
-func updateIsActive(pageCtx *pageContext, nodes []*navNode) {
-	for _, c := range nodes {
-		c.Active = c.Url == pageCtx.Url
-		updateIsActive(pageCtx, c.Children)
-	}
 }
 
 func AddToSearchIndex(siteManifest manifest.SiteManifest, ndata SearchIndexEntry) {
@@ -320,7 +325,6 @@ func GenerateDocumentation(siteManifest manifest.SiteManifest, themeManifest man
 
 	for _, pageCtx := range generatedPageContexts {
 		pageCtx.Nav = navTreeRoot.Children
-		updateIsActive(&pageCtx, pageCtx.Nav)
 		generateThemedHtmlForPage(&pageCtx, siteManifest, themeTemplate)
 	}
 
