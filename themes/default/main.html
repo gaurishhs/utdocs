@@ -3,7 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <style>html{visibility: hidden;opacity:0;}</style>
+    <style>
+        html {
+            visibility: hidden;
+            opacity: 0;
+        }
+    </style>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,21 +17,22 @@
 
     <!-- Stylesheets and scripts -->
     {{ if .Site.DefaultSearch }}
-        <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer></script>
-        <script src="js/search.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer></script>
+    <script src="js/search.js" defer></script>
     {{ end }}
     {{ if .Site.HeadTags }}
-        {{ range .Site.HeadTags }}
-            {{ . }}
-        {{ end }}
+    {{ range .Site.HeadTags }}
+    {{ . }}
+    {{ end }}
     {{ end }}
     {{ if .Site.CustomFont }}
-        <style>
-            :root {
-                --custom-font: '{{ .Site.CustomFont }}' !important;
-            }
-        </style>
+    <style>
+        :root {
+            --custom-font: '{{ .Site.CustomFont }}' !important;
+        }
+    </style>
     {{ end }}
+    <script src="https://unpkg.com/quicklink@2.3.0/dist/quicklink.umd.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="css/theme.css">
@@ -36,7 +42,12 @@
 
 <body>
     {{ template "body.html" . }}
-
+    <script> window.addEventListener('load', () => {
+            quicklink.listen({
+                prerender: true,
+                el: document.querySelector('#nav'),
+            });
+        });</script>
 </body>
 
 <!--
