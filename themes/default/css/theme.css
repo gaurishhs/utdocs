@@ -295,6 +295,7 @@ th {
   display: flex;
   flex-direction: column;
   height: 50px;
+  max-height: 65px;
   width: 100%;
   border-radius: 5px;
   margin-bottom: 4px;
@@ -314,6 +315,7 @@ th {
   padding: 0;
   font-size: 0.8rem;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /* TABLE OF CONTENTS */
