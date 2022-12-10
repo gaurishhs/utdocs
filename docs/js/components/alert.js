@@ -66,7 +66,7 @@ class Alert extends HTMLElement {
                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
                 <polyline points="11 12 12 12 12 16 13 16"></polyline>
               </svg>`
-              break;
+                break;
             case 'success':
                 return `<svg xmlns="http://www.w3.org/2000/svg" class="
                 icon icon-tabler
@@ -112,6 +112,5 @@ class Alert extends HTMLElement {
     }
 
 }
-
 
 customElements.define('ut-alert', Alert);

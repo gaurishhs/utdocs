@@ -9,10 +9,6 @@
         keys: ['Title','Content'],
         minMatchCharLength: 3,
         includeMatches: true,
-        shouldSort: true,
-        threshold: 0.1,
-        location: 0,
-        distance: 100,
     });
     console.log('Fuse.js Initialized');
 

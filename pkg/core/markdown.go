@@ -71,7 +71,9 @@ func renderMarkdownPage(mdFile string, theme manifest.ThemeManifest, siteManifes
 					hhtml.WithLineNumbers(theme.Highlighting.LineNumbers),
 				),
 			),
-			emoji.Emoji,
+			emoji.New(
+				emoji.WithRenderingMethod(emoji.Twemoji),
+			),
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),

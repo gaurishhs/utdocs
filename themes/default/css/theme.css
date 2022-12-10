@@ -27,6 +27,8 @@ html {
   --custom-font: Inter, Avenir, Helvetica, Arial, sans-serif;
 }
 
+
+
 main {
   min-height: 100%;
 }
@@ -154,17 +156,13 @@ body {
   color: var(--black7);
 }
 .nav-item:hover {
-  background: var(--black9);
   cursor: pointer;
   color: #373f45;
-  border-radius: 0.5rem;
   transition: ease-in-out 0.2s;
 }
 
 [data-theme="dark"] .nav-item:hover {
-  background: var(--black1);
   color: #fff;
-  border-radius: 0.5rem;
   transition: ease-in-out 0.2s;
 }
 .nav-item.active {
@@ -316,6 +314,45 @@ th {
   font-size: 0.8rem;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.file {
+  font-size: 0.8rem;
+  background-color: transparent;
+  border: 1px solid #94a1ab;
+  border-radius: 5px;
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.5rem;
+  color: #94a1ab;
+}
+
+[data-theme="dark"] .file {
+  background-color: transparent;
+  border: 1px solid #94a1ab;
+  border-radius: 5px;
+  padding: 0.2rem 0.5rem;
+  margin-right: 0.5rem;
+  color: #94a1ab;
+}
+
+.file__name {
+  font-weight: 600;
+}
+
+.file__path {
+  font-weight: 300;
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.file_weight {
+  font-weight: 300;
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
 /* TABLE OF CONTENTS */

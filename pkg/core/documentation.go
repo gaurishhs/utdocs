@@ -16,6 +16,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type navNode struct {
@@ -135,30 +136,23 @@ func generateThemedHtmlForPage(pageContext *pageContext, siteManifest manifest.S
 	}
 
 	if siteManifest.DefaultSearch {
-		doc.Find(".main-content").Children().Each(func(i int, s *goquery.Selection) {
-			nodeName := goquery.NodeName(s)
-			url := pageContext.Url
-			if url == "." {
-				url = "/"
-			}
-			if nodeName == "h1" {
-				text := strings.ReplaceAll(s.NextFilteredUntil("p,li,a", "h1,h2,h3,h4,h5,h6").Text(), "\n", " ")
-				if text != "" {
-					s.Remove()
-				}
-				AddToSearchIndex(siteManifest, SearchIndexEntry{
-					Title:   s.Text(),
-					Url:     url + "#" + s.AttrOr("id", ""),
-					Content: text,
-				})
-			} else if nodeName == "h2" || nodeName == "h3" || nodeName == "h4" || nodeName == "h5" || nodeName == "h6" {
-				text := strings.ReplaceAll(s.NextFilteredUntil("p,li,a", "h1,h2,h3,h4,h5,h6").Text(), "\n", " ")
-				AddToSearchIndex(siteManifest, SearchIndexEntry{
-					Title:   s.Text(),
-					Url:     url + "#" + s.AttrOr("id", ""),
-					Content: text,
-				})
-			}
+		html, e := doc.Find(".main-content").Html()
+		if e != nil {
+			diagnostics.PrintError(e, "failed to find main content for "+mdFile)
+			return
+		}
+
+		stripper := bluemonday.StrictPolicy()
+
+		// Remove all the HTML tags
+		html = stripper.Sanitize(html)
+
+		html = strings.ReplaceAll(html, "\n", " ")
+
+		AddToSearchIndex(siteManifest, SearchIndexEntry{
+			Title:   pageContext.Page.Title,
+			Url:     pageContext.Url,
+			Content: html,
 		})
 	}
 
